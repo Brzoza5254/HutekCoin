@@ -1,0 +1,36 @@
+name: HutekCoin 
+
+on: [push]
+
+jobs:
+  release:
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller --noconfirm --onefile --windowed main.py
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Build-${{ matrix.os }}
+          path: |
+            dist/*.exe
+            dist/*.app
+            dist/main
