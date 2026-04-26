@@ -6,7 +6,7 @@ jobs:
   release:
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, macos13]
+        os: [windows-latest, ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     
     steps:
