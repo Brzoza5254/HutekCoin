@@ -9,7 +9,7 @@ def get_app_path(filename):
 
 class Blockchain:
     def __init__(self, db_name="blockchain.db"):
-        self.db_path = get_app_path(db_name) # Ścieżka w folderu aplikacji
+        self.db_path = get_app_path(db_name)
         self.conn = sqlite3.connect(self.db_path, check_same_thread=False)
         self.cursor = self.conn.cursor()
         self.lock = threading.Lock()
@@ -41,6 +41,14 @@ class Blockchain:
         with self.lock:
             self.cursor.execute("SELECT * FROM blocks ORDER BY idx DESC LIMIT 1")
             return self.cursor.fetchone()
+
+    def get_all_blocks(self):
+        with self.lock:
+            self.cursor.execute("SELECT * FROM blocks ORDER BY idx ASC")
+            blocks = []
+            for r in self.cursor.fetchall():
+                blocks.append({'idx': r[0], 'prev_hash': r[1], 'timestamp': r[2], 'transactions': json.loads(r[3]), 'nonce': r[4], 'hash': r[5]})
+            return blocks
 
     def calculate_hash(self, idx, prev_hash, timestamp, data, nonce):
         return hashlib.sha256(f"{idx}{prev_hash}{timestamp}{data}{nonce}".encode()).hexdigest()
