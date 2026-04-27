@@ -48,4 +48,18 @@ class Wallet:
             self.public_key = self.private_key.get_verifying_key()
 
     def get_address(self):
+        return hashlib.sha256(self.public_key.to_string()).hexdigest()[:40]                return True
+        except: return False
+
+    def save_wallet(self):
+        self.public_key = self.private_key.get_verifying_key()
+        with open(self.filename, "wb") as f:
+            f.write(self.private_key.to_string())
+
+    def load_wallet(self):
+        with open(self.filename, "rb") as f:
+            self.private_key = ecdsa.SigningKey.from_string(f.read(), curve=ecdsa.SECP256k1)
+            self.public_key = self.private_key.get_verifying_key()
+
+    def get_address(self):
         return hashlib.sha256(self.public_key.to_string()).hexdigest()[:40]
